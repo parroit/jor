@@ -1,0 +1,46 @@
+{
+  "name": "jor",
+  "description": "js on rails",
+  "version": "0.1.0",
+  "homepage": "https://github.com/parroit/jor",
+  "author": {
+    "name": "andrea parodi",
+    "email": "andrea.parodi@ebansoftware.net"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/parroit/jor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/parroit/jor/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://opensource.org/licenses/MIT"
+    }
+  ],
+  "main": "lib/jor",
+  "engines": {
+    "node": ">=0.10.26",
+    "npm": ">=1.4.3"
+  },
+  "scripts": {
+    "test": "gulp test"
+  },
+  "dependencies": {
+    "bluebird": "^2.3.0",
+    "co-views": "^0.2.0",
+    "handlebars": "^2.0.0-alpha.4",
+    "koa": "^0.10.0",
+    "koa-mount": "^1.3.0",
+    "koa-router": "^3.2.3",
+    "require-dir": "^0.1.0"
+  },
+  "devDependencies": {
+    "chai": "~1.9.1",
+    "gulp": "~3.8.6",
+    "gulp-mocha": "~0.5"
+  },
+  "keywords": []
+}
