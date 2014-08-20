@@ -7,34 +7,50 @@
  */
 
 'use strict';
-var views = require('co-views');
+var coViews = require('co-views');
+var views = require('./views');
 var koa = require('koa');
 var Router = require('koa-router');
 var mount = require('koa-mount');
 var requireDir = require('require-dir');
+var path = require('path');
+var yaml = require('js-yaml');
+var fs = require('fs');
+
 
 var app = koa();
 
+function start(dirName) {
+    /* jshint validthis:true */
+    mountPlugin(app, dirName);
+    this.server = app.listen(3000);
+
+    var configFile = path.join(dirName,'jor.yml');
+    this.config = yaml.safeLoad(fs.readFileSync(configFile, 'utf8'));
+    console.dir(this.config);
+}
+
+function stop() {
+    /* jshint validthis:true */
+    this.server.close();
+}
 
 module.exports = {
     app: app,
-    start: function(){
-        mountPlugin(app, __dirname +'/../../examples/default');
-        app.listen(3000);
-       
-    }
+    start: start,
+    stop: stop
 };
 
 
 function mountPlugin(app, dirName) {
     var ctrls = requireDir(dirName + '/controllers');
     var ctrl, ctrlName;
-    var render = views(dirName + '/views', {
+    var render = coViews(dirName + '/views', {
         map: {
             html: 'handlebars'
         }
     });
-
+    views.loadPartials(dirName);
     for (ctrlName in ctrls) {
         ctrl = ctrls[ctrlName];
         ctrl.name = ctrlName;
