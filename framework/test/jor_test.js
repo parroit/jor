@@ -21,9 +21,6 @@ describe('jor', function() {
         jor.should.be.a('object');
     });
 
-     it('is fail', function() {
-        jor.should.be.a('function');
-    });
 
 
     describe('html methods', function() {
