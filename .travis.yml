@@ -3,3 +3,7 @@ node_js:
   - 0.11
 before_script:
   - npm install -g gulp
+  - cd engine
+  - npm install
+  - cd ../framework
+  - npm install
