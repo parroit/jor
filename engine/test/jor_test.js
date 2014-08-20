@@ -38,6 +38,9 @@ describe('jor', function() {
         jorEngine.should.be.a('object');
     });
 
+     it('is fail', function() {
+        jorEngine.should.be.a('function');
+    });
     describe('when server is running', function() {
         before(function() {
             jorEngine.start(__dirname + '/../../examples/default');
