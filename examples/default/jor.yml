@@ -1,1 +1,5 @@
 name: test app
+mount: /
+plugins:
+    - ./first
+    - second

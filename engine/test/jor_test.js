@@ -18,6 +18,21 @@ var requesty = require('requesty');
 var req = requesty.new();
 req.using('http://localhost:3000').get();
 
+function shouldRespond(path, expect) {
+    return function() {
+
+        return req.using({
+            path: path
+        }).send()
+
+        .then(function(res) {
+            res.data.should.be.equal(expect);
+        });
+
+    };
+
+}
+
 describe('jor', function() {
     it('is defined', function() {
         jor.should.be.a('object');
@@ -33,63 +48,47 @@ describe('jor', function() {
         });
 
 
-        describe('mount default app controller', function() {
 
-            it('respond to controllers actions', function(done) {
+        it('mount default app controller', function(done) {
 
-                req.using({
-                    path: '/default/index'
-                }).send()
+            shouldRespond('/default/index', '<h1> this is index </h1>\nthis is index')()
 
-                .then(function(res) {
-                    res.data.should.be.equal('<h1> this is index </h1>\nthis is index');
-                })
+            .then(shouldRespond('/default/login', '<h1> this is login </h1>\nthis is login'))
 
-                .then(function(res) {
-                    return req.using({
-                        path: '/default/login'
-                    }).send();
+            .then(shouldRespond('/other/layout', '<h1> this is layout </h1>\nthis is layout'))
+                .return().then(done)
 
-                })
+            .catch(done);
+        });
 
-                .then(function(res) {
-                    res.data.should.be.equal('<h1> this is login </h1>\nthis is login');
-                })
+        describe('install handlebars plugins', function() {
 
-                .then(function(res) {
-                    return req.using({
-                        path: '/other/layout'
-                    }).send();
+            it('layout plugins is working', function(done) {
+                shouldRespond('/other/index', 'text\nappended-text\ntext-prepended')()
 
-                })
-
-                .then(function(res) {
-                    res.data.should.be.equal('<h1> this is layout </h1>\nthis is layout');
-                    done();
-                })
+                .return().then(done)
 
                 .catch(done);
             });
         });
 
-        describe('handlebars plugins', function() {
+        it('install local plugins', function(done) {
+            shouldRespond('/first/default/index', '<h1> this is first plugin </h1>\nthis is first plugin')()
 
+            .return().then(done)
 
-            it('layout plugins workings', function(done) {
-
-                req.using({
-                    path: '/other/index'
-                }).send()
-
-                .then(function(res) {
-                    res.data.should.be.equal('text\nappended-text\ntext-prepended');
-                    done();
-                })
-
-
-                .catch(done);
-            });
+            .catch(done);
         });
+
+        it('install node_modules plugins', function(done) {
+            shouldRespond('/second/default/index', '<h1> this is second plugin </h1>\nthis is second plugin')()
+
+            .return().then(done)
+
+            .catch(done);
+        });
+
+
 
     });
 });
