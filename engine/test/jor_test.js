@@ -16,7 +16,7 @@ var jor = require('../lib/jor.js');
 
 describe('jor', function(){
     it('is defined', function(){
-      jor.should.be.a('function');
+      jor.should.be.a('object');
     });
 
 });

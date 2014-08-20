@@ -15,27 +15,34 @@ var requireDir = require('require-dir');
 
 var app = koa();
 
-var render = views(__dirname + '/../views', {
-    map: {
-        html: 'handlebars'
+
+module.exports = {
+    app: app,
+    start: function(){
+        mountPlugin(app, __dirname +'/../../examples/default');
+        app.listen(3000);
+       
     }
-});
-
-mountAllCtrls(app);
-app.listen(3000);
+};
 
 
-function mountAllCtrls(app) {
-    var ctrls = requireDir('../controllers');
+function mountPlugin(app, dirName) {
+    var ctrls = requireDir(dirName + '/controllers');
     var ctrl, ctrlName;
+    var render = views(dirName + '/views', {
+        map: {
+            html: 'handlebars'
+        }
+    });
+
     for (ctrlName in ctrls) {
         ctrl = ctrls[ctrlName];
         ctrl.name = ctrlName;
-        mountCtrl(app, ctrl);
+        mountCtrl(app, ctrl, render);
     }
 }
 
-function mountAction(action, controller, router) {
+function mountAction(action, controller, router, render) {
     var fn = controller[action];
 
     if (typeof fn === 'function') {
@@ -48,13 +55,13 @@ function mountAction(action, controller, router) {
     }
 }
 
-function mountCtrl(app, controller) {
+function mountCtrl(app, controller, render) {
     var router = new Router();
     var action;
 
     for (action in controller) {
-        mountAction(action, controller, router);
+        mountAction(action, controller, router, render);
     }
 
-    app.use(mount('/' + controller.name, router.middleware()))
+    app.use(mount('/' + controller.name, router.middleware()));
 }
