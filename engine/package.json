@@ -1,5 +1,5 @@
 {
-  "name": "jor",
+  "name": "jor-engine",
   "description": "js on rails",
   "version": "0.1.0",
   "homepage": "https://github.com/parroit/jor",
@@ -20,7 +20,7 @@
       "url": "http://opensource.org/licenses/MIT"
     }
   ],
-  "main": "lib/jor",
+  "main": "lib/jor-engine",
   "engines": {
     "node": ">=0.10.26",
     "npm": ">=1.4.3"

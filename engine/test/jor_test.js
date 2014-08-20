@@ -12,7 +12,7 @@ var chai = require('chai');
 chai.expect();
 chai.should();
 
-var jor = require('../lib/jor.js');
+var jorEngine = require('../lib/jor-engine.js');
 var requesty = require('requesty');
 
 var req = requesty.new();
@@ -35,16 +35,16 @@ function shouldRespond(path, expect) {
 
 describe('jor', function() {
     it('is defined', function() {
-        jor.should.be.a('object');
+        jorEngine.should.be.a('object');
     });
 
     describe('when server is running', function() {
         before(function() {
-            jor.start(__dirname + '/../../examples/default');
+            jorEngine.start(__dirname + '/../../examples/default');
         });
 
         after(function() {
-            jor.stop();
+            jorEngine.stop();
         });
 
 
