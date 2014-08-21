@@ -22,8 +22,10 @@ var app = koa();
 function start(dirName) {
     /* jshint validthis:true */
 
-    loadPlugins.call(this, dirName);
-    this.server = app.listen(3000);
+    if (loadPlugins.call(this, dirName)) {
+        this.server = app.listen(3000);    
+    }
+    
 }
 
 function loadPlugins(dirName) {
@@ -33,7 +35,8 @@ function loadPlugins(dirName) {
     var configFile = path.join(dirName, 'jor.yml');
 
     if (!fs.existsSync(configFile)) {
-        return console.error('config file not found:' + configFile);
+        console.error('config file not found:' + configFile);
+        return false;
     }
 
     jor.config = yaml.safeLoad(fs.readFileSync(configFile, 'utf8'));
@@ -58,6 +61,8 @@ function loadPlugins(dirName) {
             loadPlugins.call(jor, plugin);
         });
     }
+
+    return true;
 }
 
 function stop() {

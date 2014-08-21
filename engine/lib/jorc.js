@@ -1,4 +1,4 @@
-#! /usr/bin/env node
+#!/home/parroit/.nvm/v0.11.13/bin/node --harmony
 
 'use strict';
 
@@ -11,4 +11,4 @@ program
 
 var engine = require('./jor-engine.js');
 
-engine.start(program.folder);
+engine.start(program.folder || process.cwd());
