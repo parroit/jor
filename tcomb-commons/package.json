@@ -1,0 +1,40 @@
+{
+  "name": "tcomb-commons",
+  "version": "0.0.1",
+  "description": "A database of types and combinators written with tcomb",
+  "main": "build/tcomb-commons.js",
+  "scripts": {
+    "test": "grunt test",
+    "build": "grunt build",
+    "jshint": "grunt jshint",
+    "start": "grunt",
+    "coverage": "istanbul cover _mocha -- --ui bdd -R dot",
+    "doc": "grunt doc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gcanti/tcomb-commons.git"
+  },
+  "author": "Giulio Canti <giulio.canti@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gcanti/tcomb-commons/issues"
+  },
+  "homepage": "https://github.com/gcanti/tcomb-commons",
+  "devDependencies": {
+    "mocha": "*",
+    "grunt": "*",
+    "grunt-rigger": "*",
+    "grunt-mocha-test": "*",
+    "grunt-contrib-watch": "*",
+    "grunt-cli": "*",
+    "emu": "*",
+    "tcomb": "*"
+  },
+  "tags": [ 
+    "tcomb",
+    "combinators",
+    "types",
+    "database"
+  ]
+}
