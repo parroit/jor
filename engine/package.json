@@ -25,12 +25,17 @@
     "node": ">=0.10.26",
     "npm": ">=1.4.3"
   },
+  "preferGlobal": "true",
+  "bin": {
+    "jor": "lib/bin.js"
+  },
   "scripts": {
     "test": "gulp test"
   },
   "dependencies": {
     "bluebird": "^2.3.0",
     "co-views": "^0.2.0",
+    "commander": "^2.3.0",
     "gulp": "^3.8.7",
     "handlebars": "^2.0.0-alpha.4",
     "handlebars-layouts": "^0.3.3",

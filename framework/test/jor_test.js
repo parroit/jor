@@ -14,7 +14,7 @@ chai.expect();
 chai.should();
 
 var jor = require('../lib/jor.js');
-var renderers = ['json', 'html', 'xml', 'text', 'view', 'yml'];
+var renderers = ['json', 'xml', 'text', 'view', 'yaml'];
 
 describe('jor', function() {
     it('is defined', function() {
