@@ -49,17 +49,19 @@ describe('model', function() {
                             defaultValue: null,
                             type: 'int',
                             maxLength: null,
-                            nullable: false
+                            nullable: false,
+                            primary: true
                         },
                         description: {
                             defaultValue: null,
                             type: 'varchar',
                             maxLength: 45,
-                            nullable: true
+                            nullable: true,
+                            primary: false
                         }
                     });
+                    done();
                 })
-                .return().then(done)
                 .catch(done);
 
         });
@@ -81,13 +83,15 @@ describe('model', function() {
                             defaultValue: null,
                             type: 'int',
                             maxLength: null,
-                            nullable: false
+                            nullable: false,
+                            primary: true
                         },
                         description: {
                             defaultValue: null,
                             type: 'varchar',
                             maxLength: 45,
-                            nullable: true
+                            nullable: true,
+                            primary: false
                         }
                     });
                     done();
@@ -110,19 +114,22 @@ describe('model', function() {
                     defaultValue: null,
                     type: 'int',
                     maxLength: null,
-                    nullable: false
+                    nullable: false,
+                    primary: false
                 },
                 description: {
                     defaultValue: null,
                     type: 'varchar',
                     maxLength: 45,
-                    nullable: true
+                    nullable: true,
+                    primary: false
                 },
                 name: {
                     defaultValue: null,
                     type: 'varchar',
                     maxLength: 45,
-                    nullable: true
+                    nullable: true,
+                    primary: false
                 }
 
             };
@@ -132,21 +139,24 @@ describe('model', function() {
                     defaultValue: null,
                     type: 'int',
                     maxLength: null,
-                    nullable: false
+                    nullable: false,
+                    primary: false
                 }),
 
                 description: model.ColumnInfo.make({
                     defaultValue: null,
                     type: 'varchar',
                     maxLength: 55,
-                    nullable: true
+                    nullable: true,
+                    primary: false
                 }),
 
                 surname: model.ColumnInfo.make({
                     defaultValue: null,
                     type: 'varchar',
                     maxLength: 45,
-                    nullable: true
+                    nullable: true,
+                    primary: false
                 })
             };
 
@@ -157,16 +167,18 @@ describe('model', function() {
                     defaultValue: null,
                     type: 'varchar',
                     maxLength: 55,
-                    nullable: true
+                    nullable: true,
+                    primary: false
                 },
             });
-            
+
             JSON.parse(JSON.stringify(diffs.inserted)).should.be.deep.equal({
                 surname: {
                     defaultValue: null,
                     type: 'varchar',
                     maxLength: 45,
-                    nullable: true
+                    nullable: true,
+                    primary: false
                 }
             });
         });

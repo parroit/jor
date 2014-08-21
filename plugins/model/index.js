@@ -9,7 +9,7 @@
 'use strict';
 var knex = require('knex');
 var tcomb = require('tcomb');
-
+var ColumnInfo = require('./lib/ColumnInfo');
 
 
 if (typeof global.struct === 'undefined') {
@@ -73,39 +73,6 @@ var typeInfos = {
 }
 
 
-function ColumnInfo(type){
-    this.defaultValue = null;
-    this.type = type;
-    this.maxLength = null;
-    this.nullable = false;
-}
-
-ColumnInfo.make = function(data){
-    var info = new ColumnInfo(data.type);
-    info.defaultValue = data.defaultValue;
-    info.maxLength = data.maxLength;
-    info.nullable = data.nullable;
-    return info;
-};
-
-ColumnInfo.prototype.equals = function(that){
-    return this.defaultValue === that.defaultValue &&
-        this.type === that.type &&
-        this.maxLength === that.maxLength &&
-        this.nullable === that.nullable;
-};
-
-
-ColumnInfo.prototype.setNullable = function(){
-    this.nullable = true;
-    return this;
-};
-
-
-ColumnInfo.prototype.primary = function(){
-   return this; 
-};
-
 
 
 function buildColumn(table, name, prop, original) {
@@ -147,7 +114,7 @@ function buildInfo(name, prop, original) {
         if (meta.kind === 'subtype') {
             var column = buildInfo(name, meta.type, prop);
             if (meta.key) {
-                return column.primary();
+                return column.setPrimary();
             } else {
                 return column;
             }
@@ -173,7 +140,22 @@ function createTable(type) {
 
 function tableInfo(type) {
     var meta = type.meta;
-    return db(meta.name).columnInfo();
+    var keyName;
+    return db.raw('show index from ' + meta.name + ' where Key_name = \'PRIMARY\'')
+
+    .then(function(resp) {
+      keyName = resp[0][0].Column_name;
+      return db(meta.name).columnInfo();
+    })
+
+    .then(function(resp) {
+        var columnName;
+        for (columnName in resp) {
+            resp[columnName].primary = columnName === keyName;
+        }
+        return resp;
+    });
+
 }
 
 function typeInfo(type) {
