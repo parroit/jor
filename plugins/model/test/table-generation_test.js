@@ -20,6 +20,12 @@ var Role = struct({
     description: maybe(maxLength(45, Str))
 }, 'Role');
 
+
+var Role2 = struct({
+    id: key(Str),
+    name: maybe(maxLength(45, Str))
+}, 'Role');
+
 var User = struct({
     username: key(maxLength(20, Str)),
     firstName: maybe(Str),
@@ -186,6 +192,33 @@ describe('model', function() {
     });
 
 
+    describe('alterTable', function() {
+
+        it('is defined', function() {
+            model.alterTable.should.be.a('function');
+        });
+
+        it('return create table sql', function(done) {
+            //console.dir(User.meta);
+            model.alterTable(Role2)
+
+            .then(function(sql){
+               sql = sql.toString(); 
+               var expected =
+                'alter table `Role` drop `description`;\n'+
+                'alter table `Role` drop `id`;\n\n'+
+
+                'alter table `Role` add `id` varchar(255), add `name` varchar(45) null;\n'+
+                'alter table `Role` add primary key role_id_primary(`id`)';
+
+                sql.should.be.equal(expected);
+                done();
+            })
+            .catch(done);
+            
+        });
+
+    });
 
     describe('createTable', function() {
 

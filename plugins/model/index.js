@@ -23,7 +23,7 @@ if (typeof global.maxLength === 'undefined') {
 }
 
 var requireDir = require('require-dir');
-var modelCommons = requireDir('./lib');
+var modelCommons = requireDir('./lib/tcomb');
 if (typeof global.key === 'undefined') {
     tcomb.mixin(global, modelCommons);
 }
@@ -109,6 +109,50 @@ function createTable(type) {
 }
 
 
+function alterTable(type) {
+
+    var oldTableInfo = tableInfo(type);
+    var newTableInfo = typeInfo(type);
+
+    return Promise.all([oldTableInfo, newTableInfo])
+        .then(function(result) {
+            var oldTableInfo = result[0];
+            var newTableInfo = result[1];
+            var diff = diffInfos(oldTableInfo, newTableInfo);
+
+            var drops = db.schema.table(type.meta.name, function(table) {
+                var name;
+                var columns = diff.removed.concat(Object.keys(diff.changed));
+                columns.forEach(function(name) {
+                    
+                    table.dropColumn(name);
+                    console.log('column %s removed',name);
+                });
+
+            }).toString();
+
+            var creation =  db.schema.table(type.meta.name, function(table) {
+                var name;
+
+                Object.keys(diff.changed).forEach(function(name) {
+                    var info = diff.changed[name];
+                    buildColumn(table, name, info);
+                    console.log('column %s changed',name);
+                });
+
+                Object.keys(diff.inserted).forEach(function(name) {
+                    var info = diff.inserted[name];
+                    buildColumn(table, name, info);
+                    console.log('column %s created',name);
+                });
+            }).toString();
+
+            return drops + ';\n\n' + creation;
+        });
+
+}
+
+
 function tableInfo(type) {
     var meta = type.meta;
     var keyName;
@@ -136,7 +180,6 @@ function typeInfo(type) {
         result[name] = buildInfo(name, meta.props[name]);
     });
 
-
     return new Promise(function(resolve, reject) {
         resolve(result);
     });
@@ -152,8 +195,10 @@ function diffInfos(left, right) {
 
     var name;
     for (name in left) {
-        if (name in right) {
-            if (!right[name].equals(left[name])) {
+        if (typeof right[name] === 'object') {
+            var typeColumn = right[name];
+            //console.log('column %s: %s', name, typeColumn.constructor.name);
+            if (!typeColumn.equals(left[name])) {
                 result.changed[name] = right[name];
             }
         } else {
@@ -162,9 +207,11 @@ function diffInfos(left, right) {
     }
 
     for (name in right) {
-        if (!(name in left)) {
+        if (typeof right[name] === 'object') {
+            if (!(name in left)) {
 
-            result.inserted[name] = right[name];
+                result.inserted[name] = right[name];
+            }
         }
     }
 
@@ -173,6 +220,7 @@ function diffInfos(left, right) {
 
 module.exports = {
     createTable: createTable,
+    alterTable: alterTable,
     tableInfo: tableInfo,
     typeInfo: typeInfo,
     diffInfos: diffInfos,
