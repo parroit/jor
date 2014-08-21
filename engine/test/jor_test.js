@@ -89,6 +89,14 @@ describe('jor', function() {
             .catch(done);
         });
 
+        it('render json', function(done) {
+            shouldRespond('/other/testJSON',  '{"result":"test","arr":[1,2,3]}')()
+
+            .return().then(done)
+
+            .catch(done);
+        });
+
         describe('post method', function() {
             before(function() {
                 req.headers({
