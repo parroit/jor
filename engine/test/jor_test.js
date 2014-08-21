@@ -18,12 +18,12 @@ var requesty = require('requesty');
 var req = requesty.new();
 req.using('http://localhost:3000').get();
 
-function shouldRespond(path, expect) {
+function shouldRespond(path, expect, body) {
     return function() {
 
         return req.using({
             path: path
-        }).send()
+        }).send(body)
 
         .then(function(res) {
             res.data.should.be.equal(expect);
@@ -87,6 +87,28 @@ describe('jor', function() {
             .return().then(done)
 
             .catch(done);
+        });
+
+        describe('post method', function() {
+            before(function() {
+                req.headers({
+                    'content-type':'application/json'
+                });
+                req.post();
+            });
+
+            after(function() {
+                req.get();
+            });
+
+            it('respond to post method', function(done) {
+                shouldRespond('/other/testPost', 'var-value', '"var-value"')()
+
+                .return().then(done)
+
+                .catch(done);
+            });
+
         });
 
 

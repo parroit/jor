@@ -1,6 +1,9 @@
 'use strict';
 
 
+
+var jor = require('jor');
+
 function* layout() {
     return { user: 'this is layout' };
 }
@@ -10,8 +13,15 @@ function* index() {
 }
 
 
+function* testPost() {
+    //jshint validthis: true
+    return { result: this.request.body.toString('utf8') };
+}
+
+
 
 module.exports = {
     layout: layout,
-    index: index
+    index: index,
+    testPost: jor.post(testPost)
 };
