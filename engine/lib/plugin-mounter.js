@@ -33,7 +33,9 @@ function responder(controller, action, dirName) {
         var rendererName = (fn.jor && fn.jor.renderer) || 'view';
         var renderer = renderers[rendererName];
 
-        this.body = yield renderer(dirName,route, result);
+        var renderResults = renderer(dirName,route, result);
+        this.set('content-type', renderResults.type);
+        this.body = yield renderResults.body;
     };
 }
 

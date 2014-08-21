@@ -9,7 +9,7 @@
 'use strict';
 
 var methods = require('methods');
-var renderers = ['json','html','xml','text','view','yml'];
+var renderers = ['json','html','xml','text','view','yaml'];
 
 function mkFunction(tagName, tagValue) {
     return function(fn) {

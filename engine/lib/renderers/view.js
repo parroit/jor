@@ -12,5 +12,8 @@ module.exports = function renderView(dirName, route, results){
     views.loadPartials(dirName);
     //var view = controller.name + '/' + action;
 
-    return render(route, results);
+    return {
+        body: render(route, results),
+        type: 'text/html'
+    };
 }

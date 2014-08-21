@@ -18,7 +18,9 @@ var requesty = require('requesty');
 var req = requesty.new();
 req.using('http://localhost:3000').get();
 
-function shouldRespond(path, expect, body) {
+function shouldRespond(path, expect, body, responseType) {
+    responseType = responseType || 'text/html';
+
     return function() {
 
         return req.using({
@@ -26,7 +28,9 @@ function shouldRespond(path, expect, body) {
         }).send(body)
 
         .then(function(res) {
-            res.data.should.be.equal(expect);
+
+            res.headers['content-type'].should.be.equal(responseType);
+            res.data.should.be.deep.equal(expect);
         });
 
     };
@@ -90,7 +94,23 @@ describe('jor', function() {
         });
 
         it('render json', function(done) {
-            shouldRespond('/other/testJSON',  '{"result":"test","arr":[1,2,3]}')()
+            shouldRespond('/other/testJSON',  {result:"test",arr:[1,2,3]}, undefined, 'application/json')()
+
+            .return().then(done)
+
+            .catch(done);
+        });
+
+        it('render yaml', function(done) {
+            shouldRespond('/other/testYaml',  'result: test\narr:\n  - 1\n  - 2\n  - 3\n', undefined, 'application/x-yaml')()
+
+            .return().then(done)
+
+            .catch(done);
+        });
+
+        it('render text', function(done) {
+            shouldRespond('/other/testText', "testText", undefined, 'text/plain')()
 
             .return().then(done)
 
