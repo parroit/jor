@@ -1,5 +1,5 @@
 {
-  "name": "jor-engine",
+  "name": "jorc",
   "description": "js on rails",
   "version": "0.1.0",
   "homepage": "https://github.com/parroit/jor",
@@ -27,7 +27,7 @@
   },
   "preferGlobal": "true",
   "bin": {
-    "jor": "lib/bin.js"
+    "jorc": "lib/jorc.js"
   },
   "scripts": {
     "test": "gulp test"
