@@ -1,0 +1,4 @@
+name: model plugin example
+mount: /
+plugins:
+    - jor-model
