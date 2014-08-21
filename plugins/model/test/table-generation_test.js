@@ -77,7 +77,7 @@ describe('model', function() {
         it('return info from object', function(done) {
             model.typeInfo(Role)
                 .then(function(columns) {
-                    columns = JSON.parse(JSON.stringify(columns))
+                    columns = JSON.parse(JSON.stringify(columns));
                     columns.should.be.deep.equal({
                         id: {
                             defaultValue: null,

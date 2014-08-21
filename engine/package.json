@@ -47,7 +47,8 @@
     "koa-router": "^3.2.3",
     "koa-static": "^1.4.6",
     "require-dir": "^0.1.0",
-    "resolve": "^1.0.0"
+    "resolve": "^1.0.0",
+    "xml": "0.0.12"
   },
   "devDependencies": {
     "chai": "~1.9.1",
