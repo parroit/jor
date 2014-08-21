@@ -7,15 +7,22 @@
  */
 'use strict';
 
-
+var fs = require('fs');
 var Router = require('koa-router');
 var mount = require('koa-mount');
 var requireDir = require('require-dir');
 var koaBody = require('koa-body')();
 var renderers = requireDir(__dirname + '/renderers');
+var serveStatic = require('koa-static');
 
 function mountPlugin(app, dirName, mountPoint) {
     var ctrls = requireDir(dirName + '/controllers');
+    var staticFolder = dirName + '/static';
+    
+    if (fs.existsSync(staticFolder)) {
+        app.use(mount(mountPoint, serveStatic(staticFolder)));
+    }
+
     var ctrl, ctrlName;
     for (ctrlName in ctrls) {
         ctrl = ctrls[ctrlName];

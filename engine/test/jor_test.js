@@ -157,7 +157,15 @@ describe('jor', function() {
         });
 
         it('mount static folder', function(done) {
-            shouldRespond('/test.txt', 'test.txt', undefined, 'text/plain')()
+            shouldRespond('/test.txt', 'test.txt', undefined, 'text/plain; charset=utf-8')()
+
+            .return().then(done)
+
+            .catch(done);
+        });
+
+         it('mount static folder for plugins', function(done) {
+            shouldRespond('/first/test2.txt', 'test.txt', undefined, 'text/plain; charset=utf-8')()
 
             .return().then(done)
 
