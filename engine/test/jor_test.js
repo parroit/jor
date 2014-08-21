@@ -94,7 +94,7 @@ describe('jor', function() {
         });
 
         it('render json', function(done) {
-            shouldRespond('/other/testJSON',  {result:"test",arr:[1,2,3]}, undefined, 'application/json')()
+            shouldRespond('/other/testJSON',  {result:'test',arr:[1,2,3]}, undefined, 'application/json')()
 
             .return().then(done)
 
@@ -110,7 +110,15 @@ describe('jor', function() {
         });
 
         it('render text', function(done) {
-            shouldRespond('/other/testText', "testText", undefined, 'text/plain')()
+            shouldRespond('/other/testText', 'testText', undefined, 'text/plain')()
+
+            .return().then(done)
+
+            .catch(done);
+        });
+
+        it('render xml', function(done) {
+            shouldRespond('/other/testXML', '<result>test</result><arr><a>1</a><a>2</a><a>3</a></arr>', undefined, 'application/xml')()
 
             .return().then(done)
 
@@ -140,6 +148,36 @@ describe('jor', function() {
         });
 
 
+        it('accept controller returning promises', function(done) {
+            shouldRespond('/other/testPromise', 'testText', undefined, 'text/plain')()
 
+            .return().then(done)
+
+            .catch(done);
+        });
+
+        it('mount static folder', function(done) {
+            shouldRespond('/test.txt', 'test.txt', undefined, 'text/plain')()
+
+            .return().then(done)
+
+            .catch(done);
+        });
+
+         it('accept controller rejecting promises', function(done) {
+
+            req.using({
+                path: '/other/failPromise'
+            }).send()
+
+            .then(function(res) {
+                done(new Error('should respond with 500 error'));
+            })
+            
+            .catch(function(err){
+                err.statusCode.should.be.equal(500);
+                done();
+            });
+        });
     });
 });

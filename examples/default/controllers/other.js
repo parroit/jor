@@ -19,20 +19,38 @@ function* testPost() {
 }
 
 function* testJSON() {
-    //jshint validthis: true
     return { result: 'test', arr:[1,2,3] };
 }
 
 function* testYaml() {
-    //jshint validthis: true
     return { result: 'test', arr:[1,2,3] };
+}
+
+
+
+function* testXML() {
+    return [ {result: 'test'}, {arr:[{a:1},{a:2},{a:3}] } ];
 }
 
 
 
 function* testText() {
-    //jshint validthis: true
-    return "testText";
+    return 'testText';
+}
+
+
+function* testPromise() {
+    return new Promise(function(resolve,reject){
+        resolve('testText');
+    });
+}
+
+
+function* failPromise() {
+    return new Promise(function(resolve,reject){
+        reject(new Error('rejected promise'));
+    });
+
 }
 
 
@@ -44,5 +62,8 @@ module.exports = {
     testPost: jor.post(testPost),
     testJSON: jor.json(testJSON),
     testYaml: jor.yaml(testYaml),
-    testText: jor.text(testText)
+    testText: jor.text(testText),
+    testPromise: jor.text(testPromise),
+    failPromise: jor.text(failPromise),
+    testXML: jor.xml(testXML)
 };

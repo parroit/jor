@@ -26,14 +26,14 @@ function mountPlugin(app, dirName, mountPoint) {
 
 function responder(controller, action, dirName) {
     var fn = controller[action];
-    
+
     return function * () {
         var result = yield fn;
+
         var route = controller.name + '/' + action;
         var rendererName = (fn.jor && fn.jor.renderer) || 'view';
         var renderer = renderers[rendererName];
-
-        var renderResults = renderer(dirName,route, result);
+        var renderResults = renderer(dirName, route, result);
         this.set('content-type', renderResults.type);
         this.body = yield renderResults.body;
     };
@@ -45,12 +45,12 @@ function mountAction(action, controller, router, dirName) {
     if (typeof fn === 'function') {
         var method = (fn.jor && fn.jor.method) || 'get';
         var route = router[method].bind(router);
-        if (~['post','put','patch'].indexOf(method)) {
-            route('/' + action, koaBody, responder(controller, action, dirName) );    
+        if (~['post', 'put', 'patch'].indexOf(method)) {
+            route('/' + action, koaBody, responder(controller, action, dirName));
         } else {
-            route('/' + action, responder(controller, action, dirName) );    
+            route('/' + action, responder(controller, action, dirName));
         }
-        
+
     }
 }
 
