@@ -38,7 +38,7 @@ engine.start = function start(dirName) {
     this.root = main;
     this.server = app.listen(3000);
     this.config = main.config;
-    //this.emit('pluginsLoaded');
+    
 
     this.emit('engineStarted', engine.plugins);
 
@@ -48,8 +48,13 @@ engine.stop = function stop() {
     if (!this.server) {
         return;
     }
+
     try{
-        this.server.close();
+        var emit = this.emit.bind(this);
+        emit('engineStopping');
+        this.server.close(function(){
+            emit('engineStopped');
+        });
         this.server = null;    
     } catch(err) {
         console.error(err);

@@ -89,7 +89,7 @@ function alterTable(type) {
                 columns.forEach(function(name) {
                     
                     table.dropColumn(name);
-                    console.log('column %s removed',name);
+                   // console.log('column %s removed',name);
                 });
 
             }).toString();
@@ -102,7 +102,7 @@ function alterTable(type) {
                 Object.keys(columns).forEach(function(name) {
                     var info = columns[name];
                     buildColumn(table, name, info);
-                    console.log('column %s created',name);
+                   // console.log('column %s created',name);
                 });
             }).toString();
 

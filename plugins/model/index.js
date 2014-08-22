@@ -18,8 +18,25 @@ var path = require('path');
 module.exports = function(engine, plugin) {
     var model = engine.model = (engine.model || {});
     model.databases = [];
-    
+
     jor.mountTypes(modelCommons);
+
+
+    engine.on('engineStopped', function() {
+        
+        model.databases.forEach(function(database) {
+            database.destroy();
+            database = null;
+        });
+
+        engine.plugins.forEach(function(plugin) {
+            delete plugin.database;
+        });
+
+        engine.emit('databasesUnloaded', model.databases);
+        model.databases = [];
+    });
+
 
     engine.on('engineStarted', function(plugins) {
         plugins.forEach(function(plugin) {
@@ -31,20 +48,20 @@ module.exports = function(engine, plugin) {
             }
 
             plugin.database = db;
-            
+
             var modelsFolder = path.join(plugin.dirName, 'models');
-            
+
             if (fs.existsSync(modelsFolder)) {
                 var schemas = requireDir(modelsFolder);
-                Object.keys(schemas).forEach(function(name){
-                    plugin[name] = model[name] = new Model(schemas[name],db);
+                Object.keys(schemas).forEach(function(name) {
+                    plugin[name] = model[name] = new Model(schemas[name], db);
 
                 });
             }
         });
 
-        engine.emit('databasesLoaded',model.databases);
+        engine.emit('databasesLoaded', model.databases);
     });
 
-    
+
 };
