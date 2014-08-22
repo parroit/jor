@@ -54,13 +54,13 @@ describe('jor', function() {
         });
 
         it('save plugins instances', function() {
-            jorEngine.plugins.length.should.be.equal(2);
+            jorEngine.plugins.length.should.be.equal(3);
         });
 
         describe('loaded plugins', function() {
             var p;
             before(function() {
-                p = jorEngine.plugins[0];
+                p = jorEngine.plugins[1];
             });
 
 

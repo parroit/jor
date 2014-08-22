@@ -10,12 +10,16 @@
 
 var gulp = require('gulp');
 var mocha = require('gulp-mocha');
+var debug = require('gulp-debug');
 
 gulp.task('test', function () {
   return gulp.src('./test/*.js')
+    .pipe(debug())
     .pipe(mocha({
       ui: 'bdd',
       reporter: 'spec'
+    }).on('err',function(err){
+        console.log(err.stack);
     }));
 });
 

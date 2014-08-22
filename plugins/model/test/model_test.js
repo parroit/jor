@@ -12,19 +12,51 @@ var chai = require('chai');
 chai.expect();
 chai.should();
 
-var modelInit = require('../index');
+var engine = require('../../../engine/lib/jor-engine.js');
+var path = require('path');
 
-/*
-require('../lib/migrations');
+describe('model', function() {
 
-
-var model = {};
-modelInit(model);
-model.model.db.destroy();
-*/
-
-describe('modelInit', function() {
-    it('is defined', function() {
-       modelInit.should.be.a('function');
+    before(function(done) {
+        engine.on('databasesLoaded',function(){
+            done();
+        });
+        engine.start(__dirname + '/../../../examples/model-example');
     });
+
+    after(function() {
+        engine.stop();
+    });
+
+    it('init plugin on start', function() {
+        engine.model.should.be.a('object');
+    });
+
+    it('init databases on start', function() {
+        //console.dir(engine.model.databases)
+        engine.model.databases.length.should.be.equal(1);
+    });
+
+    it('add databases to plugins', function() {
+        engine.plugins[0].database.schema.should.be.a('object');
+    });
+
+
+    it('init models on start', function() {
+        engine.model.Role.constructor.name.should.be.equal('Model');
+    });
+
+    it('add models to plugins', function() {
+        engine.plugins[0].Role.constructor.name.should.be.equal('Model');
+    });
+
+    describe('Model instances', function() {
+        var Role;
+
+        before(function() {
+            Role = engine.model.Role;
+        });
+    });
+
+
 });

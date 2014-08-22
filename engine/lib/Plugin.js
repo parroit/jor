@@ -19,11 +19,15 @@ proto.loadConfig = function() {
     var configFile = path.join(this.dirName, 'jor.yml');
 
     if (!fs.existsSync(configFile)) {
-        console.error('config file not found:' + configFile);
-        return false;
+        throw new Error('config file not found:' + configFile);
     }
 
-    this.config = yaml.safeLoad(fs.readFileSync(configFile, 'utf8'));
+    try {
+        this.config = yaml.safeLoad(fs.readFileSync(configFile, 'utf8'));    
+    } catch (err) {
+        throw new Error('Invalid config file `' + configFile + '`. ' +err.message);
+    }
+    
     this.mountPoint = this.config.mount || ('/' + this.config.name);
     this.name = this.config.name;
 

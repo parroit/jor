@@ -5,21 +5,25 @@
  * Copyright (c) 2014 Andrea Parodi
  * Licensed under the MIT license.
  */
-
 'use strict';
 
 var chai = require('chai');
 chai.expect();
 chai.should();
-var jor = require('jor');
-var eng = {};
 
-require('../index')(eng);
+var requireDir = require('require-dir');
+var modelCommons = requireDir('../lib/tcomb');
+var EventEmitter = require('events').EventEmitter;
 var migrations = require('../lib/migrations');
 var ColumnInfo = require('../lib/ColumnInfo');
-migrations.init(eng.model.db);
 
-jor.types.mixin(global,jor.types);
+var jor = require('jor');
+jor.mountTypes(modelCommons);
+
+if (!global.struct){
+    jor.types.mixin(global, jor.types);    
+}
+
 
 var Role = struct({
     id: key(Int),
@@ -32,6 +36,7 @@ var Role2 = struct({
     name: maybe(maxLength(45, Str))
 }, 'Role');
 
+
 var User = struct({
     username: key(maxLength(20, Str)),
     firstName: maybe(Str),
@@ -41,14 +46,48 @@ var User = struct({
     born: maybe(Dat)
 }, 'User');
 
-
 describe('migrations', function() {
     it('is defined', function() {
         migrations.should.be.a('object');
     });
 
-    after(function(){
-        eng.model.db.destroy();
+    var eng;
+
+
+    before(function(done) {
+        eng = new EventEmitter();
+        
+        require('../index')(eng);
+
+        var plugins = [{
+            dirName: 'not-exixts',
+            config: {
+                db: {
+                    client: 'mysql',
+                    connection: {
+                        host: '127.0.0.1',
+                        user: 'root',
+                        password: '123456',
+                        database: 'tests'
+                    }
+                }
+            }
+        }];
+
+        var _this = this;
+        eng.on('databasesLoaded',function(dbs){
+            _this.db = dbs[0];
+            migrations.init(_this.db);
+            done();
+        });
+        eng.emit('engineStarted', plugins);
+    });
+
+    after(function() {
+        if (this.db) {
+            this.db.destroy();    
+        }
+        
     });
 
     describe('tableInfo', function() {
@@ -179,7 +218,7 @@ describe('migrations', function() {
             var diffs = migrations.diffInfos(left, right);
             diffs.removed.should.be.deep.equal(['name']);
             JSON.parse(JSON.stringify(diffs.changed)).should.be.deep.equal({
-                 description: {
+                description: {
                     defaultValue: null,
                     type: 'varchar',
                     maxLength: 55,
@@ -212,20 +251,20 @@ describe('migrations', function() {
             //console.dir(User.meta);
             migrations.alterTable(Role2)
 
-            .then(function(sql){
-               sql = sql.toString(); 
-               var expected =
-                'alter table `Role` drop `description`;\n'+
-                'alter table `Role` drop `id`;\n\n'+
+            .then(function(sql) {
+                sql = sql.toString();
+                var expected =
+                    'alter table `Role` drop `description`;\n' +
+                    'alter table `Role` drop `id`;\n\n' +
 
-                'alter table `Role` add `id` varchar(255), add `name` varchar(45) null;\n'+
-                'alter table `Role` add primary key role_id_primary(`id`)';
+                    'alter table `Role` add `id` varchar(255), add `name` varchar(45) null;\n' +
+                    'alter table `Role` add primary key role_id_primary(`id`)';
 
                 sql.should.be.equal(expected);
                 done();
             })
-            .catch(done);
-            
+                .catch(done);
+
         });
 
     });

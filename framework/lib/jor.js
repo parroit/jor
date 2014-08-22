@@ -45,4 +45,9 @@ exports.mountTypes = function(modelCommons){
         tcomb.mixin(exports.types, modelCommons);
     }
     
-}
+};
+
+
+exports.define = function define(name,fields){
+    return tcomb.struct(fields, name);
+};

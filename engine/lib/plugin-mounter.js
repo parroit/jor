@@ -16,9 +16,9 @@ var renderers = requireDir(__dirname + '/renderers');
 var serveStatic = require('koa-static');
 
 
-function mountStaticFiles (engine, plugin){
+function mountStaticFiles(engine, plugin) {
     var staticFolder = plugin.dirName + '/static';
-    
+
     if (fs.existsSync(staticFolder)) {
         engine.koa.use(mount(plugin.mountPoint, serveStatic(staticFolder)));
     }
@@ -26,13 +26,16 @@ function mountStaticFiles (engine, plugin){
 }
 
 function mountControllers(engine, plugin) {
-    var ctrls = requireDir(plugin.dirName + '/controllers');
+    var ctrlsFolder = plugin.dirName + '/controllers';
+    if (fs.existsSync(ctrlsFolder)) {
+        var ctrls = requireDir(ctrlsFolder);
 
-    var ctrl, ctrlName;
-    for (ctrlName in ctrls) {
-        ctrl = ctrls[ctrlName];
-        ctrl.name = ctrlName;
-        mountCtrl(engine.koa, ctrl, plugin.dirName, plugin.mountPoint);
+        var ctrl, ctrlName;
+        for (ctrlName in ctrls) {
+            ctrl = ctrls[ctrlName];
+            ctrl.name = ctrlName;
+            mountCtrl(engine.koa, ctrl, plugin.dirName, plugin.mountPoint);
+        }
     }
 }
 
