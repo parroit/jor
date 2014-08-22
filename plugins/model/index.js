@@ -13,7 +13,9 @@ var tcombCommons = require('tcomb-commons');
 var requireDir = require('require-dir');
 var modelCommons = requireDir('./lib/tcomb');
 
-
+function define(name,fields){
+    return tcomb.struct(fields, name);
+}
 
 
 module.exports = function(engine) {
