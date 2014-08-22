@@ -12,8 +12,14 @@ var chai = require('chai');
 chai.expect();
 chai.should();
 
-var model = require('../index');
+var eng = {};
 
+require('../index')(eng);
+var migrations = require('../lib/migrations');
+var ColumnInfo = require('../lib/ColumnInfo');
+migrations.init(eng.model.db);
+
+eng.model.t.mixin(global,eng.model.t);
 
 var Role = struct({
     id: key(Int),
@@ -36,19 +42,23 @@ var User = struct({
 }, 'User');
 
 
-describe('model', function() {
+describe('migrations', function() {
     it('is defined', function() {
-        model.should.be.a('object');
+        migrations.should.be.a('object');
+    });
+
+    after(function(){
+        eng.model.db.destroy();
     });
 
     describe('tableInfo', function() {
 
         it('is defined', function() {
-            model.tableInfo.should.be.a('function');
+            migrations.tableInfo.should.be.a('function');
         });
 
         it('return info from table', function(done) {
-            model.tableInfo(Role)
+            migrations.tableInfo(Role)
                 .then(function(columns) {
                     columns.should.be.deep.equal({
                         id: {
@@ -77,11 +87,11 @@ describe('model', function() {
     describe('typeInfo', function() {
 
         it('is defined', function() {
-            model.typeInfo.should.be.a('function');
+            migrations.typeInfo.should.be.a('function');
         });
 
         it('return info from object', function(done) {
-            model.typeInfo(Role)
+            migrations.typeInfo(Role)
                 .then(function(columns) {
                     columns = JSON.parse(JSON.stringify(columns));
                     columns.should.be.deep.equal({
@@ -111,7 +121,7 @@ describe('model', function() {
     describe('diffInfos', function() {
 
         it('is defined', function() {
-            model.diffInfos.should.be.a('function');
+            migrations.diffInfos.should.be.a('function');
         });
 
         it('return diff between two infos', function() {
@@ -141,7 +151,7 @@ describe('model', function() {
             };
 
             var right = {
-                id: model.ColumnInfo.make({
+                id: ColumnInfo.make({
                     defaultValue: null,
                     type: 'int',
                     maxLength: null,
@@ -149,7 +159,7 @@ describe('model', function() {
                     primary: false
                 }),
 
-                description: model.ColumnInfo.make({
+                description: ColumnInfo.make({
                     defaultValue: null,
                     type: 'varchar',
                     maxLength: 55,
@@ -157,7 +167,7 @@ describe('model', function() {
                     primary: false
                 }),
 
-                surname: model.ColumnInfo.make({
+                surname: ColumnInfo.make({
                     defaultValue: null,
                     type: 'varchar',
                     maxLength: 45,
@@ -166,7 +176,7 @@ describe('model', function() {
                 })
             };
 
-            var diffs = model.diffInfos(left, right);
+            var diffs = migrations.diffInfos(left, right);
             diffs.removed.should.be.deep.equal(['name']);
             JSON.parse(JSON.stringify(diffs.changed)).should.be.deep.equal({
                  description: {
@@ -195,12 +205,12 @@ describe('model', function() {
     describe('alterTable', function() {
 
         it('is defined', function() {
-            model.alterTable.should.be.a('function');
+            migrations.alterTable.should.be.a('function');
         });
 
         it('return create table sql', function(done) {
             //console.dir(User.meta);
-            model.alterTable(Role2)
+            migrations.alterTable(Role2)
 
             .then(function(sql){
                sql = sql.toString(); 
@@ -223,12 +233,12 @@ describe('model', function() {
     describe('createTable', function() {
 
         it('is defined', function() {
-            model.createTable.should.be.a('function');
+            migrations.createTable.should.be.a('function');
         });
 
         it('return create table sql', function() {
             //console.dir(User.meta);
-            var sql = model.createTable(User).toString();
+            var sql = migrations.createTable(User).toString();
             var expected =
                 'create table `User` (' +
                 '`username` varchar(20), ' +
