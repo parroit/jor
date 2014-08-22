@@ -133,15 +133,22 @@ function tableInfo(type) {
 }
 
 function typeInfo(type) {
+    var result = getTypeInfo(type);
+
+    return new Promise(function(resolve, reject) {
+        resolve(result);
+    });
+}
+
+
+function getTypeInfo(type) {
     var meta = type.meta;
     var result = {};
     Object.keys(meta.props).forEach(function(name) {
         result[name] = buildInfo(name, meta.props[name]);
     });
 
-    return new Promise(function(resolve, reject) {
-        resolve(result);
-    });
+    return result;
 }
 
 
@@ -182,6 +189,7 @@ module.exports = {
     alterTable: alterTable,
     tableInfo: tableInfo,
     typeInfo: typeInfo,
+    getTypeInfo: getTypeInfo,
     diffInfos: diffInfos,
     init: function(database){
         db = database;
