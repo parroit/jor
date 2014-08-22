@@ -8,10 +8,9 @@
 
 'use strict';
 var knex = require('knex');
-var tcomb = require('tcomb');
-var tcombCommons = require('tcomb-commons');
 var requireDir = require('require-dir');
 var modelCommons = requireDir('./lib/tcomb');
+var jor = require('jor');
 
 function define(name,fields){
     return tcomb.struct(fields, name);
@@ -31,17 +30,5 @@ module.exports = function(engine) {
         }
     });
 
-    model.t = {};
-
-    if (typeof global.struct === 'undefined') {
-        tcomb.mixin(model.t, tcomb);
-    }
-
-    if (typeof global.maxLength === 'undefined') {
-        tcomb.mixin(model.t, tcombCommons);
-    }
-
-    if (typeof global.key === 'undefined') {
-        tcomb.mixin(model.t, modelCommons);
-    }
+    jor.mountTypes(modelCommons);     
 };

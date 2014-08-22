@@ -15,19 +15,24 @@ var koaBody = require('koa-body')();
 var renderers = requireDir(__dirname + '/renderers');
 var serveStatic = require('koa-static');
 
-function mountPlugin(app, dirName, mountPoint) {
-    var ctrls = requireDir(dirName + '/controllers');
-    var staticFolder = dirName + '/static';
+
+function mountStaticFiles (engine, plugin){
+    var staticFolder = plugin.dirName + '/static';
     
     if (fs.existsSync(staticFolder)) {
-        app.use(mount(mountPoint, serveStatic(staticFolder)));
+        engine.koa.use(mount(plugin.mountPoint, serveStatic(staticFolder)));
     }
+
+}
+
+function mountControllers(engine, plugin) {
+    var ctrls = requireDir(plugin.dirName + '/controllers');
 
     var ctrl, ctrlName;
     for (ctrlName in ctrls) {
         ctrl = ctrls[ctrlName];
         ctrl.name = ctrlName;
-        mountCtrl(app, ctrl, dirName, mountPoint);
+        mountCtrl(engine.koa, ctrl, plugin.dirName, plugin.mountPoint);
     }
 }
 
@@ -78,4 +83,7 @@ function mountCtrl(app, controller, dirName, mountPoint) {
     app.use(mount(mountPoint, router.middleware()));
 }
 
-module.exports = mountPlugin;
+module.exports = {
+    mountControllers: mountControllers,
+    mountStaticFiles: mountStaticFiles
+};

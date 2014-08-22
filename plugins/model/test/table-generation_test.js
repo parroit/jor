@@ -11,7 +11,7 @@
 var chai = require('chai');
 chai.expect();
 chai.should();
-
+var jor = require('jor');
 var eng = {};
 
 require('../index')(eng);
@@ -19,7 +19,7 @@ var migrations = require('../lib/migrations');
 var ColumnInfo = require('../lib/ColumnInfo');
 migrations.init(eng.model.db);
 
-eng.model.t.mixin(global,eng.model.t);
+jor.types.mixin(global,jor.types);
 
 var Role = struct({
     id: key(Int),

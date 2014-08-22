@@ -31,7 +31,8 @@
   "dependencies": {
     "handlebars-layouts": "^0.3.3",
     "include-folder": "^0.7.0",
-    "methods": "^1.1.0"
+    "methods": "^1.1.0",
+    "tcomb": "0.0.11"
   },
   "devDependencies": {
     "chai": "~1.9.1",

@@ -14,6 +14,7 @@ chai.should();
 
 var jorEngine = require('../lib/jor-engine.js');
 var requesty = require('requesty');
+var path = require('path');
 
 var req = requesty.new();
 req.using('http://localhost:3000').get();
@@ -52,6 +53,34 @@ describe('jor', function() {
             jorEngine.stop();
         });
 
+        it('save plugins instances', function() {
+            jorEngine.plugins.length.should.be.equal(2);
+        });
+
+        describe('loaded plugins', function() {
+            var p;
+            before(function() {
+                p = jorEngine.plugins[0];
+            });
+
+
+            it('has config', function() {
+                p.config.name.should.be.equal('first');
+            });
+
+            it('has name', function() {
+                p.name.should.be.equal('first');
+            });
+
+            it('has dirName', function() {
+                p.dirName.should.be.equal(path.resolve(__dirname , '../../examples/default/first'));
+            });
+
+             it('run initFn', function() {
+                p.initCalled.should.be.equal(true);
+            });
+
+        });
 
 
         it('mount default app controller', function(done) {
@@ -94,7 +123,10 @@ describe('jor', function() {
         });
 
         it('render json', function(done) {
-            shouldRespond('/other/testJSON',  {result:'test',arr:[1,2,3]}, undefined, 'application/json')()
+            shouldRespond('/other/testJSON', {
+                result: 'test',
+                arr: [1, 2, 3]
+            }, undefined, 'application/json')()
 
             .return().then(done)
 
@@ -102,7 +134,7 @@ describe('jor', function() {
         });
 
         it('render yaml', function(done) {
-            shouldRespond('/other/testYaml',  'result: test\narr:\n  - 1\n  - 2\n  - 3\n', undefined, 'application/x-yaml')()
+            shouldRespond('/other/testYaml', 'result: test\narr:\n  - 1\n  - 2\n  - 3\n', undefined, 'application/x-yaml')()
 
             .return().then(done)
 
@@ -128,7 +160,7 @@ describe('jor', function() {
         describe('post method', function() {
             before(function() {
                 req.headers({
-                    'content-type':'application/json'
+                    'content-type': 'application/json'
                 });
                 req.post();
             });
@@ -164,7 +196,7 @@ describe('jor', function() {
             .catch(done);
         });
 
-         it('mount static folder for plugins', function(done) {
+        it('mount static folder for plugins', function(done) {
             shouldRespond('/first/test2.txt', 'test.txt', undefined, 'text/plain; charset=utf-8')()
 
             .return().then(done)
@@ -172,7 +204,7 @@ describe('jor', function() {
             .catch(done);
         });
 
-         it('accept controller rejecting promises', function(done) {
+        it('accept controller rejecting promises', function(done) {
 
             req.using({
                 path: '/other/failPromise'
@@ -181,8 +213,8 @@ describe('jor', function() {
             .then(function(res) {
                 done(new Error('should respond with 500 error'));
             })
-            
-            .catch(function(err){
+
+            .catch(function(err) {
                 err.statusCode.should.be.equal(500);
                 done();
             });

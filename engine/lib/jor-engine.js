@@ -11,44 +11,68 @@
 var koa = require('koa');
 var fs = require('fs');
 var path = require('path');
-var yaml = require('js-yaml');
 var resolve = require('resolve');
+var Plugin = require('./Plugin');
+var pluginMounter = require('./plugin-mounter');
+var EventEmitter = require('events').EventEmitter;
 
-var mountPlugin = require('./plugin-mounter');
 
 
-var app = koa();
+var engine = module.exports = new EventEmitter();
+var app = engine.koa = koa();
 
-function start(dirName) {
-    /* jshint validthis:true */
+engine.plugins = [];
 
-    if (loadPlugins.call(this, dirName)) {
-        this.server = app.listen(3000);    
+engine.start = function start(dirName) {
+    var main;
+    if ( (main = loadPlugin(dirName)) ) {
+        this.root = main;
+        this.server = app.listen(3000);   
+        this.config = main.config; 
     }
     
-}
+};
 
-function loadPlugins(dirName) {
-    /* jshint validthis:true */
-    var jor = this;
-
-    var configFile = path.join(dirName, 'jor.yml');
-
-    if (!fs.existsSync(configFile)) {
-        console.error('config file not found:' + configFile);
-        return false;
+engine.stop = function stop() {
+    if (!this.server) {
+        return;
     }
 
-    jor.config = yaml.safeLoad(fs.readFileSync(configFile, 'utf8'));
+    this.server.close();
+};
 
-    var mountPoint = jor.config.mount || ('/' + jor.config.name);
-    //console.log('mountPoint: ' + mountPoint);
+function biEmit(plugin, event){
+    engine.emit(event, plugin);
+    plugin.emit(event);
+}
 
-    mountPlugin(app, dirName, mountPoint);
+function loadPlugin(dirName) {
 
-    if (Array.isArray(jor.config.plugins)) {
-        jor.config.plugins.forEach(function(plugin) {
-            plugin = resolve.sync(plugin, {
+    var plugin = new Plugin(dirName);
+    if (!plugin.loadConfig()) {
+        return null;
+    }
+
+    if (plugin.config.init) {
+        var initFile = path.join(dirName, plugin.config.init);     
+        var initFn  = require(initFile);
+        initFn(engine, plugin);
+    }
+
+    biEmit(plugin,'controllersMounting');
+    pluginMounter.mountControllers(engine, plugin);
+    biEmit(plugin,'controllersMounted');
+
+    biEmit(plugin,'staticsMounting');
+    pluginMounter.mountStaticFiles(engine, plugin);
+    biEmit(plugin,'staticsMounted');
+
+    
+    if (Array.isArray(plugin.config.plugins)) {
+        biEmit(plugin,'pluginsLoading');
+        
+        plugin.config.plugins.forEach(function(pluginName) {
+            var pluginDirName = resolve.sync(pluginName, {
                 basedir: dirName,
                 readFileSync: function(path) {
                     return '{"main": "jor.yml"}';
@@ -58,23 +82,13 @@ function loadPlugins(dirName) {
                 }
             });
 
-            loadPlugins.call(jor, plugin);
+            var subPlugin = loadPlugin(pluginDirName);
+            engine.plugins.push(subPlugin);
         });
+
+        biEmit(plugin,'pluginsLoaded');
     }
 
-    return true;
+    return plugin;
 }
 
-function stop() {
-    /* jshint validthis:true */
-    if (!this.server) {
-        return;
-    }
-    this.server.close();
-}
-
-module.exports = {
-    app: app,
-    start: start,
-    stop: stop
-};

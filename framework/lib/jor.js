@@ -9,7 +9,9 @@
 'use strict';
 
 var methods = require('methods');
-var renderers = ['json', 'xml','text','view','yaml'];
+var renderers = ['json', 'xml', 'text', 'view', 'yaml'];
+var tcomb = require('tcomb');
+var tcombCommons = require('tcomb-commons');
 
 function mkFunction(tagName, tagValue) {
     return function(fn) {
@@ -20,10 +22,27 @@ function mkFunction(tagName, tagValue) {
 }
 
 methods.forEach(function(method) {
-    exports[method] = mkFunction('method',method);
+    exports[method] = mkFunction('method', method);
 });
 
 
 renderers.forEach(function(renderer) {
-    exports[renderer] = mkFunction('renderer',renderer);
+    exports[renderer] = mkFunction('renderer', renderer);
 });
+
+exports.types = {};
+
+exports.mountTypes = function(modelCommons){
+    if (typeof global.struct === 'undefined') {
+        tcomb.mixin(exports.types, tcomb);
+    }
+
+    if (typeof global.maxLength === 'undefined') {
+        tcomb.mixin(exports.types, tcombCommons);
+    }
+
+    if (typeof global.key === 'undefined') {
+        tcomb.mixin(exports.types, modelCommons);
+    }
+    
+}
