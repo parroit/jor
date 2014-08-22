@@ -48,8 +48,13 @@ engine.stop = function stop() {
     if (!this.server) {
         return;
     }
-
-    this.server.close();
+    try{
+        this.server.close();
+        this.server = null;    
+    } catch(err) {
+        console.error(err);
+    }
+    
 };
 
 function biEmit(plugin, event) {

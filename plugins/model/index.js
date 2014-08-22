@@ -18,8 +18,8 @@ var path = require('path');
 module.exports = function(engine, plugin) {
     var model = engine.model = (engine.model || {});
     model.databases = [];
+    
     jor.mountTypes(modelCommons);
-
 
     engine.on('engineStarted', function(plugins) {
         plugins.forEach(function(plugin) {

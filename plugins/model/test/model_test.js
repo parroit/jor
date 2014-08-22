@@ -18,7 +18,7 @@ var path = require('path');
 describe('model', function() {
 
     before(function(done) {
-        engine.on('databasesLoaded',function(){
+        engine.on('databasesLoaded', function() {
             done();
         });
         engine.start(__dirname + '/../../../examples/model-example');
@@ -55,6 +55,52 @@ describe('model', function() {
 
         before(function() {
             Role = engine.model.Role;
+        });
+
+        it('save schema', function() {
+            Role.schema.meta.name.should.be.equal('Role');
+        });
+
+        it('save db', function() {
+            Role.db.schema.should.be.a('object');
+        });
+
+        it('select rows', function(done) {
+            Role.select()
+
+            .then(function(set) {
+                set.length.should.be.equal(1);
+                //set[0].schema.meta.should.be.a('object');
+                done();
+            })
+
+            .catch(done);
+        });
+
+        it('where rows', function(done) {
+            Role.select({
+                id: 12
+            })
+
+            .then(function(set) {
+                set.length.should.be.equal(0);
+                //set[0].schema.meta.should.be.a('object');
+                done();
+            })
+
+            .catch(done);
+        });
+
+        it('where rows raw', function(done) {
+            Role.select('id > 12')
+
+            .then(function(set) {
+                set.length.should.be.equal(0);
+                //set[0].schema.meta.should.be.a('object');
+                done();
+            })
+
+            .catch(done);
         });
     });
 

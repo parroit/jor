@@ -32,22 +32,17 @@ renderers.forEach(function(renderer) {
 
 exports.types = {};
 
-exports.mountTypes = function(modelCommons){
-    if (typeof global.struct === 'undefined') {
+exports.mountTypes = function(modelCommons) {
+    if (!exports.types.struct) {
         tcomb.mixin(exports.types, tcomb);
-    }
-
-    if (typeof global.maxLength === 'undefined') {
         tcomb.mixin(exports.types, tcombCommons);
-    }
-
-    if (typeof global.key === 'undefined') {
         tcomb.mixin(exports.types, modelCommons);
+    
     }
     
 };
 
 
-exports.define = function define(name,fields){
+exports.define = function define(name, fields) {
     return tcomb.struct(fields, name);
 };
